@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bs.barragewebsitespringboot.dao.CollectionDAO">
+    <select id="getPageCollectionByUserId" resultType="String">
+        SELECT DISTINCT collection_name from collections where user_id=#{userId}
+    </select>
+    <select id="getPageCollectionDetail" resultMap="getPageCollectionDetailMap">
+        select * from collections where user_id=#{userId} and collection_name=#{collectionName}
+    </select>
+    <resultMap id="getPageCollectionDetailMap" type="com.bs.barragewebsitespringboot.entity.CollectionEntity">
+        <id property="collectionId" column="collection_id"></id>
+        <result property="userId" column="user_id"></result>
+        <result property="videoId" column="video_id"></result>
+        <result property="description" column="description"></result>
+        <result property="collectionDate" column="collection_date"></result>
+        <association property="videoEntity"  select="getVideoDetail" column="video_id"></association>
+    </resultMap>
+    <select id="getVideoDetail" resultMap="getVideoMap">
+        select * from videos where video_id=#{video_id}
+    </select>
+    <resultMap id="getVideoMap" type="com.bs.barragewebsitespringboot.entity.VideoEntity">
+        <id column="video_id" property="videoId"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="uploader_user_id" property="uploaderUserId"/>
+        <result column="upload_date" property="uploadDate"/>
+        <result column="video_url" property="videoUrl"/>
+        <result column="subtitle_url" property="subtitleUrl"/>
+        <result column="cover_image_url" property="coverImageUrl"/>
+        <result column="views" property="views"/>
+        <result column="comments" property="comments"/>
+        <result column="barrages" property="barrages"></result>
+        <result column="likes" property="likes"/>
+        <result column="favorites" property="favorites"/>
+        <result column="shares" property="shares"/>
+        <result column="tags" property="tags"/>
+        <result column="category" property="category"/>
+        <result column="type" property="type"/>
+        <association property="userDetail" select="getUserDetail" column="uploader_user_id"></association>
+    </resultMap>
+
+
+    <select id="getUserDetail" resultType="com.bs.barragewebsitespringboot.pojo.User">
+        select user_id, username, gender, birthday, avatar_url, signature, user_level, experience, fans from users where user_id=#{arg0}
+    </select>
+</mapper>
+

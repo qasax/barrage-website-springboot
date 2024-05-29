@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bs.barragewebsitespringboot.dao.SystemMsgDAO">
+    <select id="getSystemMsgByIds" resultType="com.bs.barragewebsitespringboot.pojo.SystemMsg">
+        SELECT * FROM system_msg
+        WHERE system_msg.message_id IN
+        <foreach collection="messageIdList" item="itemId" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+        ORDER BY FIELD(message_id,
+        <foreach collection="messageIdList" item="itemId" separator=",">
+            #{itemId}
+        </foreach>
+        )
+    </select>
+    <select id="getPageSystemMsg" resultType="com.bs.barragewebsitespringboot.pojo.SystemMsg">
+        select * from system_msg
+    </select>
+</mapper>
+

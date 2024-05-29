@@ -53,6 +53,27 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         //authorizeRequests()：开启授权保护
         //anyRequest()：对所有请求开启授权保护
         //authenticated()：已认证请求会自动被授权
+        String[] PERMITTED_PATHS = {//直接放行路径
+                "/login",
+                "/register",
+                "/validateUsername",
+                "/registerNormal",
+                "/website/**",
+                "/video/getPageVideoBySearch",
+                "/video/getPageVideoByType",
+                "/video/getUserPageVideo",
+                "/video/getVideoDetail",
+                "/video/getVideo",
+                "/video/getVideoPic",
+                "/video/getSubtitle",
+                "/website/getCarouselFileName",
+                "/website/getCarouselImg",
+                "/barrage/v3/",
+                "/comment/getPageComment",
+                "/user/getAvatarByUserId",
+                "/userFollow/getUserPageFollow",
+                "/userFollow/getUserPageFans",
+        };
         http.formLogin(AbstractHttpConfigurer::disable)//取消默认登录页面的使用
                 .logout(AbstractHttpConfigurer::disable)//取消默认登出页面的使用
                 .authenticationProvider(authenticationProvider())//将自己配置的PasswordEncoder放入SecurityFilterChain中
@@ -60,7 +81,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//禁用session，因为我们已经使用了JWT
                 .httpBasic(AbstractHttpConfigurer::disable)//禁用httpBasic，因为我们传输数据用的是post，而且请求体是JSON
                 //requestMatchers(HttpMethod.POST,）只管理post请求
-                .authorizeHttpRequests(request -> request.requestMatchers( "/login", "/register","/website/**","/**").permitAll().anyRequest().authenticated())//开放两个接口，一个注册，一个登录，其余均要身份认证
+                .authorizeHttpRequests(request -> request.requestMatchers(PERMITTED_PATHS).permitAll().anyRequest().authenticated())//开放两个接口，一个注册，一个登录，其余均要身份认证
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)//将用户授权时用到的JWT校验过滤器添加进SecurityFilterChain中，并放在UsernamePasswordAuthenticationFilter的前面.
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler);
         return http.build();

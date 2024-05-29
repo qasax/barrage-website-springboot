@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bs.barragewebsitespringboot.dao.CommentRepliesDAO">
+    <select id="getReplyCommentAdmin" resultType="com.bs.barragewebsitespringboot.pojo.CommentReplies">
+        select * from comment_replies
+    </select>
+    <select id="getReplyToMeMsg" resultMap="getReplyToMeMsgMap">
+        SELECT * FROM comment_replies
+        WHERE comment_replies.reply_id IN
+        <foreach collection="messageIdList" item="itemId" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+        ORDER BY FIELD(reply_id,
+        <foreach collection="messageIdList" item="itemId" separator=",">
+            #{itemId}
+        </foreach>
+        )
+    </select>
+    <resultMap id="getReplyToMeMsgMap" type="com.bs.barragewebsitespringboot.entity.CommentRepliesEntity">
+        <id property="replyId" column="reply_id"></id>
+        <result property="fromUserId" column="from_user_id"></result>
+        <result property="toUserId" column="to_user_id"/>
+        <result property="likes" column="likes" />
+        <result property="timestamp" column="timestamp"></result>
+        <result property="content" column="content"/>
+        <result property="commentId" column="comment_id"/>
+        <association property="fromUserDetail" select="getUserDetail" column="from_user_id"/>
+        <association property="toUserDetail" select="getUserDetail" column="to_user_id"/>
+        <association property="comment" select="getCommentDetail" column="comment_id"/>
+    </resultMap>
+    <select id="getUserDetail" resultType="com.bs.barragewebsitespringboot.pojo.User">
+        select * from users where user_id=#{arg0}
+    </select>
+    <select id="getCommentDetail" resultType="com.bs.barragewebsitespringboot.pojo.Comment">
+        select * from comments where comment_id=#{arg0}
+    </select>
+
+
+
+
+    <select id="getReplyByUserId" resultMap="getReplyByUserIdMap">
+        select *
+        from comment_replies where from_user_id=#{userId};
+    </select>
+    <resultMap id="getReplyByUserIdMap" type="com.bs.barragewebsitespringboot.entity.CommentRepliesEntity">
+        <id property="replyId" column="reply_id"></id>
+        <result property="fromUserId" column="from_user_id"></result>
+        <result property="toUserId" column="to_user_id"/>
+        <result property="likes" column="likes" />
+        <result property="timestamp" column="timestamp"></result>
+        <result property="content" column="content"/>
+        <result property="commentId" column="comment_id"/>
+        <association property="fromUserDetail" select="getUserDetail" column="from_user_id"/>
+        <association property="toUserDetail" select="getUserDetail" column="to_user_id"/>
+        <association property="comment" select="getComment" column="comment_id"/>
+    </resultMap>
+    <select id="getComment" resultMap="getCommentMap">
+        select * from comments where comment_id=#{arg0}
+    </select>
+    <resultMap id="getCommentMap" type="com.bs.barragewebsitespringboot.entity.CommentEntity">
+        <id property="commentId" column="comment_id"></id>
+        <result property="videoId" column="video_id"></result>
+        <result property="senderUserId" column="sender_user_id"></result>
+        <result property="content" column="content"></result>
+        <result property="timestamp" column="timestamp"></result>
+        <result property="likes" column="likes"></result>
+        <association property="senderUserDetail"  select="getUserDetail" column="sender_user_id"></association>
+        <association property="video" select="getVideoDetail" column="video_id"></association>
+    </resultMap>
+    <select id="getVideoDetail" resultType="com.bs.barragewebsitespringboot.pojo.Video">
+        select * from videos where video_id=#{arg0}
+    </select>
+</mapper>
+

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bs.barragewebsitespringboot.dao.LikeDAO">
+
+    <select id="getPageVideoLike" resultMap="getPageVideoLikeMap">
+        select * from likes where (user_id=#{userId} and action_object= 'video')
+    </select>
+    <resultMap id="getPageVideoLikeMap" type="com.bs.barragewebsitespringboot.entity.LikeEntity">
+        <id property="likeId" column="like_id"></id>
+        <result property="userId" column="user_id"></result>
+        <result property="actionObject" column="action_object"></result>
+        <result property="actionObjectId" column="action_object_id"></result>
+        <result property="likeDate" column="like_date"></result>
+        <association property="videoEntity" select="getVideoDetail" column="action_object_id"></association>
+    </resultMap>
+    <select id="getVideoDetail" resultMap="getVideoMap">
+        select * from videos where video_id=#{action_object_id}
+    </select>
+    <resultMap id="getVideoMap" type="com.bs.barragewebsitespringboot.entity.VideoEntity">
+        <id column="video_id" property="videoId"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="uploader_user_id" property="uploaderUserId"/>
+        <result column="upload_date" property="uploadDate"/>
+        <result column="video_url" property="videoUrl"/>
+        <result column="subtitle_url" property="subtitleUrl"/>
+        <result column="cover_image_url" property="coverImageUrl"/>
+        <result column="views" property="views"/>
+        <result column="comments" property="comments"/>
+        <result column="barrages" property="barrages"></result>
+        <result column="likes" property="likes"/>
+        <result column="favorites" property="favorites"/>
+        <result column="shares" property="shares"/>
+        <result column="tags" property="tags"/>
+        <result column="category" property="category"/>
+        <result column="type" property="type"/>
+        <association property="userDetail" select="getUserDetail" column="uploader_user_id"></association>
+    </resultMap>
+
+
+
+    <select id="getPageCommentLike" resultMap="getPageCommentLikeMap">
+        select * from likes where (user_id=#{userId} and action_object= 'comment')
+    </select>
+    <resultMap id="getPageCommentLikeMap" type="com.bs.barragewebsitespringboot.entity.LikeEntity">
+        <id property="likeId" column="like_id"></id>
+        <result property="userId" column="user_id"></result>
+        <result property="actionObject" column="action_object"></result>
+        <result property="actionObjectId" column="action_object_id"></result>
+        <result property="likeDate" column="like_date"></result>
+        <association property="commentEntity"  select="getCommentDetail" column="action_object_id"></association>
+    </resultMap>
+    <select id="getCommentDetail" resultMap="getCommentsMap">
+        select * from comments where comment_id=#{action_object_id}
+    </select>
+    <resultMap id="getCommentsMap" type="com.bs.barragewebsitespringboot.entity.CommentEntity">
+        <id property="commentId" column="comment_id"></id>
+        <result property="videoId" column="video_id"></result>
+        <result property="senderUserId" column="sender_user_id"></result>
+        <result property="content" column="content"></result>
+        <result property="timestamp" column="timestamp"></result>
+        <result property="likes" column="likes"></result>
+        <association property="senderUserDetail"  select="getUserDetail" column="sender_user_id"></association>
+    </resultMap>
+
+
+
+
+    <select id="getPageReplyLike" resultMap="getPageReplyLikeMap">
+        select * from likes where (user_id=#{userId} and action_object= 'reply')
+    </select>
+    <resultMap id="getPageReplyLikeMap" type="com.bs.barragewebsitespringboot.entity.LikeEntity">
+        <id property="likeId" column="like_id"></id>
+        <result property="userId" column="user_id"></result>
+        <result property="actionObject" column="action_object"></result>
+        <result property="actionObjectId" column="action_object_id"></result>
+        <result property="likeDate" column="like_date"></result>
+        <association property="commentRepliesEntity" select="getReplyDetail" column="action_object_id"></association>
+    </resultMap>
+    <select id="getReplyDetail" resultMap="getReplyMap">
+        select * from comment_replies where reply_id=#{action_object_id}
+    </select>
+    <resultMap id="getReplyMap" type="com.bs.barragewebsitespringboot.entity.CommentRepliesEntity">
+        <id property="replyId" column="reply_id"></id>
+        <result property="commentId" column="comment_id"></result>
+        <result property="fromUserId" column="from_user_id"></result>
+        <result property="toUserId" column="to_user_id"></result>
+        <result property="content" column="content"></result>
+        <result property="timestamp" column="timestamp"></result>
+        <result property="likes" column="likes"></result>
+        <association property="fromUserDetail" select="getUserDetail" column="from_user_id"></association>
+        <association property="toUserDetail"  select="getUserDetail" column="to_user_id"></association>
+        <association property="comment"  select="getCommentDetail" column="comment_id"/>
+    </resultMap>
+
+
+
+
+    <select id="getUserDetail" resultType="com.bs.barragewebsitespringboot.pojo.User">
+        select user_id, username, gender, birthday, avatar_url, signature, user_level, experience, fans from users where user_id=#{arg0}
+    </select>
+</mapper>
+

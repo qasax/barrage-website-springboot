@@ -1,6 +1,77 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bs.barragewebsitespringboot.dao.VideoDAO">
+    <insert id="uploadVideo" useGeneratedKeys="true" keyProperty="videoId">
+        insert into videos values (null,#{video.title},#{video.description},#{video.uploaderUserId},#{video.uploadDate},#{video.videoUrl},#{video.subtitleUrl},#{video.coverImageUrl},0,0,0,0,0,0,#{video.tags},#{video.category},#{video.type})
+    </insert>
+    <update id="uploadVideoPic">
+        update videos set cover_image_url=#{video.coverImageUrl}  where video_id=#{video.videoId}
+    </update>
 
-</beans>
+    <select id="getAllVideo" resultType="com.bs.barragewebsitespringboot.pojo.Video">
+        SELECT * from videos
+    </select>
+
+    <select id="getPageVideoByType" resultMap="getVideoDetail">
+        select * from videos where type=#{type}
+    </select>
+    <resultMap id="getVideoDetail" type="com.bs.barragewebsitespringboot.entity.VideoEntity">
+        <id column="video_id" property="videoId"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="uploader_user_id" property="uploaderUserId"/>
+        <result column="upload_date" property="uploadDate"/>
+        <result column="video_url" property="videoUrl"/>
+        <result column="subtitle_url" property="subtitleUrl"/>
+        <result column="cover_image_url" property="coverImageUrl"/>
+        <result column="views" property="views"/>
+        <result column="comments" property="comments"/>
+        <result column="barrages" property="barrages"></result>
+        <result column="likes" property="likes"/>
+        <result column="favorites" property="favorites"/>
+        <result column="shares" property="shares"/>
+        <result column="tags" property="tags"/>
+        <result column="category" property="category"/>
+        <result column="type" property="type"/>
+        <association property="userDetail" select="getUserDetail" column="uploader_user_id"></association>
+    </resultMap>
+    <select id="getUserDetail" resultType="com.bs.barragewebsitespringboot.pojo.User">
+        select user_id, username, gender, birthday, avatar_url, signature, user_level, experience, fans from users where user_id=#{arg0}
+    </select>
+
+
+
+
+    <select id="getVideoByIds" resultMap="getVideoDetail">
+        SELECT * FROM videos
+        WHERE videos.video_id IN
+        <foreach collection="videoIdList" item="itemId" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+        ORDER BY FIELD(video_id,
+        <foreach collection="videoIdList" item="itemId" separator=",">
+            #{itemId}
+        </foreach>
+        )
+    </select>
+
+    <select id="getPageVideoBySearch" resultMap="getVideoDetail">
+        select * from videos
+        where title like concat('%', #{keyword}, '%')
+           or description like concat('%', #{keyword}, '%')
+           or uploader_user_id like concat('%', #{keyword}, '%')
+           or type like concat('%', #{keyword}, '%');
+    </select>
+    <select id="getPageVideoAdmin" resultType="com.bs.barragewebsitespringboot.pojo.Video">
+    select * from videos
+    </select>
+    <select id="getVideoDetail" resultMap="getVideoDetail">
+        select  * from videos where video_id=#{videoId}
+    </select>
+
+
+    <select id="getPageVideoByUserId" resultMap="getVideoDetail">
+        select * from videos where uploader_user_id=#{userId}
+    </select>
+</mapper>
+

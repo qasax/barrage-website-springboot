@@ -1,5 +1,7 @@
-package com.example.ncre_system_idea.utils;
+package com.bs.barragewebsitespringboot.utils;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 
 public class FileUtils {
-    public ResponseEntity<byte[]> downFile(String fileName,String downName) {
+    public static  ResponseEntity<byte[]> downFile(String fileName,String downName) {
         //创建输入流
         //使用try-with-resources语句自动关闭资源
         try (InputStream is = new FileInputStream(fileName)) {
@@ -30,12 +32,42 @@ public class FileUtils {
             throw new RuntimeException(e);
         }
     }
-    public void upFile(String fileName, MultipartFile file) throws FileNotFoundException {
-        try(OutputStream out = new FileOutputStream(fileName)){
+    public static  byte[] returnFile(String filePath) throws FileNotFoundException {
+        File file = new File(filePath);
+        try(FileInputStream inputStream = new FileInputStream(file)){
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes, 0, inputStream.available());
+            return bytes;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static  void upFile(String filePath, MultipartFile file) throws FileNotFoundException {
+        try(OutputStream out = new FileOutputStream(filePath)){
             out.write(file.getBytes());
             out.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    //返回给前端 视频文件
+    public static void sendFileToResponse(String filePath, HttpServletResponse response) throws IOException {
+        File file = new File(filePath);
+        if (!file.exists() || !file.isFile()) {
+            throw new FileNotFoundException("File not found: " + filePath);
+        }
+
+        response.setContentType("video/mp4");
+        response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
+
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            // 使用BufferedOutputStream来提高效率
+            ServletOutputStream outputStream = response.getOutputStream();
+            byte[] buffer = new byte[4096]; // 4KB buffer
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
         }
     }
 }

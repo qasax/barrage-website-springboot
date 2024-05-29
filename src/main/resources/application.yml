@@ -5,12 +5,45 @@ spring:
     encoding: UTF-8
     servlet:
       content-type: text/html
-
-server:
-  port: 9960
-  # mysql 配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ncre?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://localhost:3306/barrage-website-mysql?useSSL=false&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8
     username: root
     password: 123456
+  mvc:
+    static-path-pattern: /website/**
+  web:
+    resources:
+      static-locations: classpath:/static/website
+  security:
+    user:
+      name: test
+      password: 123456
+  data:
+    redis:
+      host: 127.0.0.1
+      password: 123456
+      port: 6379
+  cache:
+    type: redis
+    cache-names: redisCache
+    redis:
+      cache-null-values: true
+  servlet:
+    multipart:
+      max-file-size: 3GB
+      max-request-size: 3GB
+server:
+  port: 9960
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+value:
+  videoBaseURL: C:\\Users\\Administrator\\Desktop\\毕业设计\\毕业设计源码\\barrage-website-springboot\\lib\\video\\
+  videoPicBaseURL: C:\\Users\\Administrator\\Desktop\\毕业设计\\毕业设计源码\\barrage-website-springboot\\lib\\videoPic\\
+  videoSubURL: C:\\Users\\Administrator\\Desktop\\毕业设计\\毕业设计源码\\barrage-website-springboot\\lib\\videoSub\\
+  avatarBaseURL: C:\\Users\\Administrator\\Desktop\\毕业设计\\毕业设计源码\\barrage-website-springboot\\lib\\avatar\\
+  carouseBaselUrl: C:\\Users\\Administrator\\Desktop\\毕业设计\\毕业设计源码\\barrage-website-springboot\\lib\\carouse\\
+  pythonURL: python
+  pyProgramURL: C:\Users\Administrator\PycharmProjects\WhisperTest\main.py

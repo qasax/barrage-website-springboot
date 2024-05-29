@@ -45,12 +45,12 @@ public class JwtFilter extends OncePerRequestFilter {
         httpServletResponse.setContentType("text/json;charset=utf-8");
         if (StringUtils.hasLength(token)) {
             String username = null;
-            Integer id=null;
+            Integer userId=null;
             String redisToken=null;
             try {
                 username = (String) JwtUtils.getClaims(token).get("username");
-                id = Integer.parseInt((String) JwtUtils.getClaims(token).get("userId")) ;
-                redisToken= stringRedisTemplate.opsForValue().get(String.valueOf(id));//经过反序列化后，key必须为String value则是Object
+                userId = Integer.parseInt((String) JwtUtils.getClaims(token).get("userId")) ;
+                redisToken= stringRedisTemplate.opsForValue().get(String.valueOf(userId));//经过反序列化后，key必须为String value则是Object
             } catch (ExpiredJwtException e) {
                 logger.info("失效身份");
             }
@@ -65,7 +65,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authenticationFilter);
                 //下面两行将用户id和名称放在 请求域中 --》fileController中使用
                 httpServletRequest.setAttribute("username",username);
-                httpServletRequest.setAttribute("userId",id);
+                httpServletRequest.setAttribute("userId",userId);
                 httpServletRequest.setAttribute("role",role);
             }
         }
